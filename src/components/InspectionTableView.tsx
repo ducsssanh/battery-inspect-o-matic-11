@@ -52,7 +52,14 @@ const InspectionTableView: React.FC<InspectionTableViewProps> = ({
       <CardHeader className="pb-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <CardTitle className="text-lg">{table.title}</CardTitle>
+            <CardTitle className="text-lg break-words">
+              {table.title.split(' ').map((word, index) => (
+                <React.Fragment key={index}>
+                  {word}{' '}
+                  {(index + 1) % 3 === 0 && <br />}
+                </React.Fragment>
+              ))}
+            </CardTitle>
             <CardDescription>
               Regulation: {table.regulationNumber}
             </CardDescription>
@@ -92,7 +99,7 @@ const InspectionTableView: React.FC<InspectionTableViewProps> = ({
       </CardHeader>
       {table.visible && (
         <CardContent className="pb-4">
-          <div className="overflow-x-auto w-full" style={{ maxWidth: "100%" }}>
+          <div className="overflow-x-auto w-full">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -116,10 +123,10 @@ const InspectionTableView: React.FC<InspectionTableViewProps> = ({
                         ) : (
                           <Input 
                             type="text" 
-                            placeholder="Enter value"
+                            placeholder="Value"
                             value={table.results[`${sample}-${column.id}`] || ""}
                             onChange={(e) => onResultChange(table.id, `${sample}-${column.id}`, e.target.value)}
-                            className="h-9 w-full min-w-[120px]"
+                            className="h-9 w-20 min-w-[5rem] text-sm"
                           />
                         )}
                       </TableCell>
@@ -129,13 +136,13 @@ const InspectionTableView: React.FC<InspectionTableViewProps> = ({
                         value={table.results[`${sample}-results`] || ""}
                         onValueChange={(value) => onResultChange(table.id, `${sample}-results`, value)}
                       >
-                        <SelectTrigger className="w-full min-w-[100px]">
-                          <SelectValue placeholder="Select" />
+                        <SelectTrigger className="w-24 h-9 text-sm">
+                          <SelectValue placeholder="Result" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="P">Pass (P)</SelectItem>
                           <SelectItem value="F">Fail (F)</SelectItem>
-                          <SelectItem value="N/A">Not Applicable (N/A)</SelectItem>
+                          <SelectItem value="N/A">N/A</SelectItem>
                         </SelectContent>
                       </Select>
                     </TableCell>
