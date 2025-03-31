@@ -23,6 +23,7 @@ const Index = () => {
   const [criteria, setCriteria] = useState<InspectionCriterion[]>(cellInspectionCriteria);
   const [tables, setTables] = useState<InspectionTable[]>(inspectionTables);
   const [reportOpen, setReportOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("tables"); // Default to tables tab
 
   // Update criteria status based on test table results
   useEffect(() => {
@@ -155,12 +156,7 @@ const Index = () => {
       );
       
       // Switch to tables tab
-      document.querySelector(`[data-state="inactive"][value="tables"]`)?.click();
-      
-      toast({
-        title: "Table shown",
-        description: `Test table for criterion ${criterionId} is now visible`,
-      });
+      setActiveTab("tables");
     }
   };
 
@@ -179,7 +175,7 @@ const Index = () => {
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <Tabs defaultValue="criteria" className="w-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid grid-cols-2 w-full mb-6">
                 <TabsTrigger value="criteria">Inspection Criteria</TabsTrigger>
                 <TabsTrigger value="tables">Test Tables</TabsTrigger>

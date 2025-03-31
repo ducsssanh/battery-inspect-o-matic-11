@@ -172,7 +172,7 @@ export const inspectionTables: InspectionTable[] = [
       { id: "results", title: "Results" },
     ],
     results: {},
-    visible: false,
+    visible: true, // Set to true by default
   },
   {
     id: "external-short-circuit-table",
@@ -189,7 +189,7 @@ export const inspectionTables: InspectionTable[] = [
       { id: "results", title: "Results" },
     ],
     results: {},
-    visible: false,
+    visible: true, // Set to true by default
   },
   {
     id: "free-fall-table",
@@ -203,7 +203,7 @@ export const inspectionTables: InspectionTable[] = [
       { id: "results", title: "Results" },
     ],
     results: {},
-    visible: false,
+    visible: true, // Set to true by default
   },
   {
     id: "thermal-abuse-table",
@@ -219,7 +219,7 @@ export const inspectionTables: InspectionTable[] = [
       { id: "resultsLower", title: "Results" },
     ],
     results: {},
-    visible: false,
+    visible: true, // Set to true by default
   },
   {
     id: "crush-table",
@@ -235,7 +235,7 @@ export const inspectionTables: InspectionTable[] = [
       { id: "results", title: "Results" },
     ],
     results: {},
-    visible: false,
+    visible: true, // Set to true by default
   },
   {
     id: "forced-discharge-table",
@@ -251,7 +251,7 @@ export const inspectionTables: InspectionTable[] = [
       { id: "results", title: "Results" },
     ],
     results: {},
-    visible: false,
+    visible: true, // Set to true by default
   },
 ];
 
