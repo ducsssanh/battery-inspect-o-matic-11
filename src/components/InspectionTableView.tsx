@@ -126,7 +126,7 @@ const InspectionTableView: React.FC<InspectionTableViewProps> = ({
                             placeholder="Value"
                             value={table.results[`${sample}-${column.id}`] || ""}
                             onChange={(e) => onResultChange(table.id, `${sample}-${column.id}`, e.target.value)}
-                            className="h-9 w-20 min-w-[5rem] text-sm"
+                            className="h-9 w-60 min-w-[15rem] text-sm"
                           />
                         )}
                       </TableCell>
