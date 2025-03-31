@@ -181,7 +181,7 @@ const Index = () => {
                 <TabsTrigger value="tables">Test Tables</TabsTrigger>
               </TabsList>
               <TabsContent value="criteria" className="mt-0">
-                <ScrollArea className="h-[calc(100vh-200px)]">
+                <ScrollArea className="h-[calc(100vh-200px)] pr-4">
                   <InspectionCriteriaList 
                     criteria={criteria} 
                     tables={tables}
@@ -191,15 +191,17 @@ const Index = () => {
                 </ScrollArea>
               </TabsContent>
               <TabsContent value="tables" className="mt-0">
-                <ScrollArea className="h-[calc(100vh-200px)]">
-                  {tables.map(table => (
-                    <InspectionTableView 
-                      key={table.id} 
-                      table={table} 
-                      onResultChange={handleTableResultChange}
-                      onToggleVisibility={handleToggleTableVisibility}
-                    />
-                  ))}
+                <ScrollArea className="h-[calc(100vh-200px)] pr-4">
+                  <div className="pb-12">
+                    {tables.map(table => (
+                      <InspectionTableView 
+                        key={table.id} 
+                        table={table} 
+                        onResultChange={handleTableResultChange}
+                        onToggleVisibility={handleToggleTableVisibility}
+                      />
+                    ))}
+                  </div>
                 </ScrollArea>
               </TabsContent>
             </Tabs>

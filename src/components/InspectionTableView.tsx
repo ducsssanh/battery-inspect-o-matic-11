@@ -91,53 +91,59 @@ const InspectionTableView: React.FC<InspectionTableViewProps> = ({
         </div>
       </CardHeader>
       {table.visible && (
-        <CardContent className="pb-4 overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {table.columns.map((column) => (
-                  <TableHead key={column.id} className="whitespace-nowrap">
-                    {column.title}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {table.samples.map((sample) => (
-                <TableRow key={sample}>
+        <CardContent className="pb-4">
+          <div className="overflow-x-auto w-full" style={{ maxWidth: "100%" }}>
+            <Table>
+              <TableHeader>
+                <TableRow>
                   {table.columns.map((column) => (
-                    <TableCell key={`${sample}-${column.id}`} className="p-2">
-                      {column.id === "model" || column.id === "sample" ? (
-                        sample
-                      ) : column.id.includes("results") ? (
-                        <Select 
-                          value={table.results[`${sample}-${column.id}`] || ""}
-                          onValueChange={(value) => onResultChange(table.id, `${sample}-${column.id}`, value)}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="P">Pass (P)</SelectItem>
-                            <SelectItem value="F">Fail (F)</SelectItem>
-                            <SelectItem value="N/A">Not Applicable (N/A)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <Input 
-                          type="text" 
-                          placeholder="Enter value"
-                          value={table.results[`${sample}-${column.id}`] || ""}
-                          onChange={(e) => onResultChange(table.id, `${sample}-${column.id}`, e.target.value)}
-                          className="h-9"
-                        />
-                      )}
-                    </TableCell>
+                    <TableHead key={column.id} className="whitespace-nowrap px-2 py-2">
+                      {column.title}
+                    </TableHead>
                   ))}
+                  <TableHead className="whitespace-nowrap px-2 py-2">
+                    Results
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {table.samples.map((sample) => (
+                  <TableRow key={sample}>
+                    {table.columns.map((column) => (
+                      <TableCell key={`${sample}-${column.id}`} className="p-2">
+                        {column.id === "model" || column.id === "sample" ? (
+                          <span className="font-mono text-sm">{sample}</span>
+                        ) : (
+                          <Input 
+                            type="text" 
+                            placeholder="Enter value"
+                            value={table.results[`${sample}-${column.id}`] || ""}
+                            onChange={(e) => onResultChange(table.id, `${sample}-${column.id}`, e.target.value)}
+                            className="h-9 w-full min-w-[120px]"
+                          />
+                        )}
+                      </TableCell>
+                    ))}
+                    <TableCell className="p-2">
+                      <Select 
+                        value={table.results[`${sample}-results`] || ""}
+                        onValueChange={(value) => onResultChange(table.id, `${sample}-results`, value)}
+                      >
+                        <SelectTrigger className="w-full min-w-[100px]">
+                          <SelectValue placeholder="Select" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="P">Pass (P)</SelectItem>
+                          <SelectItem value="F">Fail (F)</SelectItem>
+                          <SelectItem value="N/A">Not Applicable (N/A)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       )}
     </Card>
