@@ -14,7 +14,13 @@ interface ReportPreviewProps {
 
 const ReportPreview: React.FC<ReportPreviewProps> = ({ open, onOpenChange, criteria }) => {
   // Sort criteria by regulation number for proper display
+  // Add a safety check for undefined regulationNumber
   const sortedCriteria = [...criteria].sort((a, b) => {
+    // Handle cases where regulationNumber might be undefined
+    if (!a.regulationNumber && !b.regulationNumber) return 0;
+    if (!a.regulationNumber) return 1;
+    if (!b.regulationNumber) return -1;
+    
     const aNum = a.regulationNumber.split(' ')[0];
     const bNum = b.regulationNumber.split(' ')[0];
     return aNum.localeCompare(bNum, undefined, { numeric: true });
@@ -58,9 +64,9 @@ const ReportPreview: React.FC<ReportPreviewProps> = ({ open, onOpenChange, crite
                     "pl-4": item.level === 2,
                     "pl-8": item.level === 3
                   })}>
-                    {item.regulationNumber}
+                    {item.regulationNumber || "-"}
                   </TableCell>
-                  <TableCell className="font-mono">{item.iecNumber}</TableCell>
+                  <TableCell className="font-mono">{item.iecNumber || "-"}</TableCell>
                   <TableCell>
                     <div className={cn("font-medium", {
                       "font-bold": item.level === 1,
@@ -74,7 +80,7 @@ const ReportPreview: React.FC<ReportPreviewProps> = ({ open, onOpenChange, crite
                       </div>
                     )}
                   </TableCell>
-                  <TableCell>{item.remarks}</TableCell>
+                  <TableCell>{item.remarks || "-"}</TableCell>
                   <TableCell className={cn("text-center font-bold", {
                     "bg-green-100": item.status === "P",
                     "bg-red-100": item.status === "F",
