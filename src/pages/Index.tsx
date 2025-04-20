@@ -1,18 +1,9 @@
-
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Beaker, ClipboardList, FileText, Package } from 'lucide-react';
-import { Button } from '@/components/ui/button';  // Add this import
-import UserProfile from '@/components/UserProfile';
 import AuthTabs from '@/components/AuthTabs';
 
 const Index = () => {
-  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
-
-  const handleLogout = () => {
-    setUser(null);
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-muted/50">
       {/* Header */}
@@ -22,18 +13,6 @@ const Index = () => {
             <span className="font-semibold text-white">TQ</span>
           </div>
           <span className="font-bold">TestQuest</span>
-        </div>
-        <div className="flex items-center gap-4">
-          {user ? (
-            <UserProfile user={user} onLogout={handleLogout} />
-          ) : (
-            <Button
-              variant="outline"
-              onClick={() => setUser({ name: 'Demo User', email: 'demo@example.com' })}
-            >
-              Demo Login
-            </Button>
-          )}
         </div>
       </header>
 

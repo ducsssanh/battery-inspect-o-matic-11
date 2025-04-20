@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,6 +11,7 @@ import InspectionTableView from "@/components/InspectionTableView";
 import InspectionSummary from "@/components/InspectionSummary";
 import ReportPreview from "@/components/ReportPreview";
 import ProductSelection from "@/components/ProductSelection";
+import DashboardHeader from "@/components/DashboardHeader";
 import { 
   fetchProductTemplates,
   InspectionCriterion, 
@@ -226,6 +226,7 @@ const Index = () => {
   if (!selectedProduct) {
     return (
       <div className="min-h-screen bg-gray-50">
+        <DashboardHeader />
         <ProductSelection onSelectProduct={handleSelectProduct} />
       </div>
     );
@@ -233,6 +234,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <DashboardHeader />
       <div className="container px-4 py-6 mx-auto max-w-7xl">
         <div className="flex items-center justify-between mb-6">
           <Button 
@@ -316,4 +318,3 @@ const Index = () => {
 };
 
 export default Index;
-
