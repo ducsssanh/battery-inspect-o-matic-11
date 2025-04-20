@@ -14,6 +14,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const { user, isAuthenticated } = useAuth();
 
+  // TEMPORARY: Authentication bypass for development
+  // TODO: Remove this bypass when connecting to your backend
+  return <>{children}</>;
+
+  // Original authentication logic - uncomment when ready to implement
+  /*
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }
@@ -23,6 +29,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   return <>{children}</>;
+  */
 };
 
 export default ProtectedRoute;

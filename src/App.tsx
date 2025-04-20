@@ -21,6 +21,7 @@ const App = () => (
           <Sonner />
           <Routes>
             <Route path="/" element={<Index />} />
+            {/* TEMPORARY: Authentication is bypassed for development */}
             <Route
               path="/tester/dashboard"
               element={
