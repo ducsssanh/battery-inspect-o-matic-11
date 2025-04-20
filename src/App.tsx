@@ -6,7 +6,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import Index from "./pages/Index";
+import TesterDashboard from "./pages/TesterDashboard";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -19,7 +21,14 @@ const App = () => (
           <Sonner />
           <Routes>
             <Route path="/" element={<Index />} />
-            {/* Add role-specific routes here */}
+            <Route
+              path="/tester/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["tester"]}>
+                  <TesterDashboard />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </TooltipProvider>
