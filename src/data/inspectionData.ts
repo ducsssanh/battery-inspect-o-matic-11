@@ -1,4 +1,30 @@
-import { InspectionCriterion, InspectionTable } from "@/types";
+export interface InspectionCriterion {
+  id: string;
+  title?: string;
+  description: string;
+  level: number;
+  parentId: string | null;
+  status: "P" | "F" | "N/A" | null;
+  regulationNumber?: string;
+  iecNumber?: string;
+  requirement?: string;
+  remarks?: string;
+  tableReference?: string;
+}
+
+export interface InspectionTable {
+  id: string;
+  title: string;
+  regulationNumber: string;
+  criterionId: string;
+  visible: boolean;
+  columns: Array<{
+    id: string;
+    title: string;
+  }>;
+  samples: string[];
+  results: Record<string, string>;
+}
 
 // Mock template data for different product types
 const productTemplates = {
