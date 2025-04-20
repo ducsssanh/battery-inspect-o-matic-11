@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Beaker, ClipboardList, FileText, Package } from 'lucide-react';
+import { Button } from '@/components/ui/button';  // Add this import
 import UserProfile from '@/components/UserProfile';
 import AuthTabs from '@/components/AuthTabs';
 
