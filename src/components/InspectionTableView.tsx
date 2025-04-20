@@ -51,16 +51,11 @@ const InspectionTableView: React.FC<InspectionTableViewProps> = ({
     })}>
       <CardHeader className="pb-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <CardTitle className="text-lg break-words">
-              {table.title.split(' ').map((word, index) => (
-                <React.Fragment key={index}>
-                  {word}{' '}
-                  {(index + 1) % 3 === 0 && <br />}
-                </React.Fragment>
-              ))}
+          <div className="max-w-lg">
+            <CardTitle className="text-base break-words pr-4">
+              {table.title}
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs">
               Regulation: {table.regulationNumber}
             </CardDescription>
           </div>
@@ -104,11 +99,11 @@ const InspectionTableView: React.FC<InspectionTableViewProps> = ({
               <TableHeader>
                 <TableRow>
                   {table.columns.map((column) => (
-                    <TableHead key={column.id} className="whitespace-nowrap px-2 py-2">
+                    <TableHead key={column.id} className="whitespace-nowrap px-2 py-2 text-xs">
                       {column.title}
                     </TableHead>
                   ))}
-                  <TableHead className="whitespace-nowrap px-2 py-2">
+                  <TableHead className="whitespace-nowrap px-2 py-2 text-xs">
                     Results
                   </TableHead>
                 </TableRow>
@@ -119,14 +114,14 @@ const InspectionTableView: React.FC<InspectionTableViewProps> = ({
                     {table.columns.map((column) => (
                       <TableCell key={`${sample}-${column.id}`} className="p-2">
                         {column.id === "model" || column.id === "sample" ? (
-                          <span className="font-mono text-sm">{sample}</span>
+                          <span className="font-mono text-xs">{sample}</span>
                         ) : (
                           <Input 
                             type="text" 
                             placeholder="Value"
                             value={table.results[`${sample}-${column.id}`] || ""}
                             onChange={(e) => onResultChange(table.id, `${sample}-${column.id}`, e.target.value)}
-                            className="h-9 w-60 min-w-[15rem] text-sm"
+                            className="h-8 w-32 min-w-[8rem] text-xs px-2"
                           />
                         )}
                       </TableCell>
@@ -136,7 +131,7 @@ const InspectionTableView: React.FC<InspectionTableViewProps> = ({
                         value={table.results[`${sample}-results`] || ""}
                         onValueChange={(value) => onResultChange(table.id, `${sample}-results`, value)}
                       >
-                        <SelectTrigger className="w-24 h-9 text-sm">
+                        <SelectTrigger className="w-20 h-8 text-xs">
                           <SelectValue placeholder="Result" />
                         </SelectTrigger>
                         <SelectContent>

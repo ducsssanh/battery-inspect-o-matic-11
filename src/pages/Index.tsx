@@ -4,14 +4,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import InspectionHeader from "@/components/InspectionHeader";
 import InspectionCriteriaList from "@/components/InspectionCriteriaList";
 import InspectionTableView from "@/components/InspectionTableView";
 import InspectionSummary from "@/components/InspectionSummary";
 import ReportPreview from "@/components/ReportPreview";
+import ProductSelection from "@/components/ProductSelection";
 import { 
-  cellInspectionCriteria, 
-  inspectionTables, 
+  fetchProductTemplates,
   InspectionCriterion, 
   InspectionTable, 
   determineTestTableStatus,
@@ -20,13 +22,24 @@ import {
 
 const Index = () => {
   const { toast } = useToast();
-  const [criteria, setCriteria] = useState<InspectionCriterion[]>(cellInspectionCriteria);
-  const [tables, setTables] = useState<InspectionTable[]>(inspectionTables);
+  const [criteria, setCriteria] = useState<InspectionCriterion[]>([]);
+  const [tables, setTables] = useState<InspectionTable[]>([]);
   const [reportOpen, setReportOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("tables"); // Default to tables tab
+  const [selectedProduct, setSelectedProduct] = useState<{ id: string, type: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Load templates when a product is selected
+  useEffect(() => {
+    if (selectedProduct) {
+      loadProductTemplate(selectedProduct.type);
+    }
+  }, [selectedProduct]);
 
   // Update criteria status based on test table results
   useEffect(() => {
+    if (tables.length === 0 || criteria.length === 0) return;
+    
     const updatedCriteria = [...criteria];
     
     // First, update criteria directly linked to tables
@@ -84,7 +97,45 @@ const Index = () => {
     if (JSON.stringify(criteria) !== JSON.stringify(updatedCriteria)) {
       setCriteria(updatedCriteria);
     }
-  }, [tables]);
+  }, [tables, criteria]);
+
+  const loadProductTemplate = async (productType: string) => {
+    setIsLoading(true);
+    try {
+      // In a real app, this would be an API call
+      const { criteria: templateCriteria, tables: templateTables } = await fetchProductTemplates(productType);
+      
+      setCriteria(templateCriteria);
+      setTables(templateTables);
+      
+      toast({
+        title: "Template Loaded",
+        description: `Inspection template for ${productType} loaded successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error Loading Template",
+        description: "Failed to load the inspection template. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSelectProduct = (productId: string, productType: string) => {
+    setSelectedProduct({ id: productId, type: productType });
+    toast({
+      title: "Product Selected",
+      description: `Loading inspection template for ${productType}...`,
+    });
+  };
+
+  const handleBackToProducts = () => {
+    setSelectedProduct(null);
+    setCriteria([]);
+    setTables([]);
+  };
 
   const handleStatusChange = (id: string, status: "P" | "F" | "N/A") => {
     setCriteria(prevCriteria => 
@@ -168,9 +219,32 @@ const Index = () => {
     });
   };
 
+  // Render product selection if no product is selected
+  if (!selectedProduct) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <ProductSelection onSelectProduct={handleSelectProduct} />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container px-4 py-6 mx-auto max-w-7xl">
+        <div className="flex items-center justify-between mb-6">
+          <Button 
+            variant="ghost" 
+            className="gap-1" 
+            onClick={handleBackToProducts}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Products
+          </Button>
+          <h2 className="text-xl font-semibold">
+            Product Inspection: {selectedProduct.type.charAt(0).toUpperCase() + selectedProduct.type.slice(1)}
+          </h2>
+        </div>
+        
         <InspectionHeader />
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -181,7 +255,7 @@ const Index = () => {
                 <TabsTrigger value="tables">Test Tables</TabsTrigger>
               </TabsList>
               <TabsContent value="criteria" className="mt-0">
-                <ScrollArea className="h-[calc(100vh-200px)] pr-4">
+                <ScrollArea className="h-[calc(100vh-280px)] pr-4">
                   <InspectionCriteriaList 
                     criteria={criteria} 
                     tables={tables}
@@ -191,7 +265,7 @@ const Index = () => {
                 </ScrollArea>
               </TabsContent>
               <TabsContent value="tables" className="mt-0">
-                <ScrollArea className="h-[calc(100vh-200px)] pr-4">
+                <ScrollArea className="h-[calc(100vh-280px)] pr-4">
                   <div className="pb-12">
                     {tables.map(table => (
                       <InspectionTableView 
