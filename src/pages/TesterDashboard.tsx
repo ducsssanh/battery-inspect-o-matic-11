@@ -32,20 +32,17 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
 
-  // Load templates when a product is selected
   useEffect(() => {
     if (selectedProduct) {
       loadProductTemplate(selectedProduct.type);
     }
   }, [selectedProduct]);
 
-  // Update criteria status based on test table results
   useEffect(() => {
     if (tables.length === 0 || criteria.length === 0) return;
     
     const updatedCriteria = [...criteria];
     
-    // First, update criteria directly linked to tables
     tables.forEach(table => {
       const tableStatus = determineTestTableStatus(table);
       if (tableStatus) {
@@ -59,8 +56,6 @@ const Index = () => {
       }
     });
     
-    // Then propagate changes upward through the hierarchy (level 3 to level 1)
-    // Process level 3 to level 2
     const level2Criteria = updatedCriteria.filter(c => c.level === 2);
     level2Criteria.forEach(parentCriterion => {
       const childrenStatuses = updatedCriteria
@@ -78,7 +73,6 @@ const Index = () => {
       }
     });
     
-    // Process level 2 to level 1
     const level1Criteria = updatedCriteria.filter(c => c.level === 1);
     level1Criteria.forEach(parentCriterion => {
       const childrenStatuses = updatedCriteria
@@ -96,7 +90,6 @@ const Index = () => {
       }
     });
     
-    // Only update if there are actual changes
     if (JSON.stringify(criteria) !== JSON.stringify(updatedCriteria)) {
       setCriteria(updatedCriteria);
     }
@@ -105,7 +98,6 @@ const Index = () => {
   const loadProductTemplate = async (productType: string) => {
     setIsLoading(true);
     try {
-      // In a real app, this would be an API call
       const { criteria: templateCriteria, tables: templateTables } = await fetchProductTemplates(productType);
       
       setCriteria(templateCriteria);
@@ -167,13 +159,11 @@ const Index = () => {
           : table
       );
       
-      // Find the updated table and its associated criterion
       const updatedTable = updatedTables.find(t => t.id === tableId);
       if (updatedTable) {
         const tableStatus = determineTestTableStatus(updatedTable);
         
         if (tableStatus) {
-          // Find and update the associated criterion
           setCriteria(prevCriteria => 
             prevCriteria.map(item => 
               item.id === updatedTable.criterionId 
@@ -209,7 +199,6 @@ const Index = () => {
         )
       );
       
-      // Switch to tables tab
       setActiveTab("tables");
     }
   };
@@ -222,11 +211,9 @@ const Index = () => {
     });
   };
 
-  // Render product selection if no product is selected
   if (!selectedProduct) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <DashboardHeader />
         <ProductSelection onSelectProduct={handleSelectProduct} />
       </div>
     );
@@ -234,7 +221,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <DashboardHeader />
       <div className="container px-4 py-6 mx-auto max-w-7xl">
         <div className="flex items-center justify-between mb-6">
           <Button 

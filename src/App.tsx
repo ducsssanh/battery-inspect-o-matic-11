@@ -9,8 +9,16 @@ import Index from "./pages/Index";
 import TesterDashboard from "./pages/TesterDashboard";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
+import DashboardHeader from "./components/DashboardHeader";
 
 const queryClient = new QueryClient();
+
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => (
+  <div className="min-h-screen bg-gray-50">
+    <DashboardHeader />
+    {children}
+  </div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -21,7 +29,6 @@ const App = () => (
           <Sonner />
           <Routes>
             <Route path="/" element={<Index />} />
-            {/* TEMPORARY: Authentication is bypassed for development */}
             <Route
               path="/tester/dashboard"
               element={
@@ -34,7 +41,11 @@ const App = () => (
               path="/manager/dashboard"
               element={
                 <ProtectedRoute allowedRoles={["manager"]}>
-                  <div>Manager Dashboard (Placeholder)</div>
+                  <DashboardLayout>
+                    <div className="container px-4 py-6 mx-auto max-w-7xl">
+                      <h1 className="text-2xl font-bold">Manager Dashboard</h1>
+                    </div>
+                  </DashboardLayout>
                 </ProtectedRoute>
               }
             />
@@ -42,7 +53,11 @@ const App = () => (
               path="/customer/dashboard"
               element={
                 <ProtectedRoute allowedRoles={["customer"]}>
-                  <div>Customer Dashboard (Placeholder)</div>
+                  <DashboardLayout>
+                    <div className="container px-4 py-6 mx-auto max-w-7xl">
+                      <h1 className="text-2xl font-bold">Customer Dashboard</h1>
+                    </div>
+                  </DashboardLayout>
                 </ProtectedRoute>
               }
             />
@@ -50,7 +65,11 @@ const App = () => (
               path="/reception/dashboard"
               element={
                 <ProtectedRoute allowedRoles={["reception"]}>
-                  <div>Reception Dashboard (Placeholder)</div>
+                  <DashboardLayout>
+                    <div className="container px-4 py-6 mx-auto max-w-7xl">
+                      <h1 className="text-2xl font-bold">Reception Dashboard</h1>
+                    </div>
+                  </DashboardLayout>
                 </ProtectedRoute>
               }
             />
@@ -58,7 +77,11 @@ const App = () => (
               path="/sales/dashboard"
               element={
                 <ProtectedRoute allowedRoles={["sales"]}>
-                  <div>Sales Dashboard (Placeholder)</div>
+                  <DashboardLayout>
+                    <div className="container px-4 py-6 mx-auto max-w-7xl">
+                      <h1 className="text-2xl font-bold">Sales Dashboard</h1>
+                    </div>
+                  </DashboardLayout>
                 </ProtectedRoute>
               }
             />
