@@ -30,6 +30,38 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/manager/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["manager"]}>
+                  <div>Manager Dashboard (Placeholder)</div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/customer/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["customer"]}>
+                  <div>Customer Dashboard (Placeholder)</div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reception/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["reception"]}>
+                  <div>Reception Dashboard (Placeholder)</div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/sales/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["sales"]}>
+                  <div>Sales Dashboard (Placeholder)</div>
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </TooltipProvider>

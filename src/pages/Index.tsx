@@ -1,19 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Beaker, ClipboardList, FileText, Package } from 'lucide-react';
-import { toast } from 'sonner';
-import SignUpForm from '@/components/SignUpForm';
 import UserProfile from '@/components/UserProfile';
+import AuthTabs from '@/components/AuthTabs';
 
 const Index = () => {
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
-  const navigate = useNavigate();
 
   const handleLogout = () => {
     setUser(null);
-    toast.success('Logged out successfully');
   };
 
   return (
@@ -95,11 +90,7 @@ const Index = () => {
         {/* Right Content - Auth Card */}
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
-            <div className="mb-6 text-center">
-              <h2 className="text-2xl font-bold">Sign Up</h2>
-              <p className="text-muted-foreground mt-1">Create your TestQuest account</p>
-            </div>
-            <SignUpForm />
+            <AuthTabs />
           </CardContent>
         </Card>
       </section>
