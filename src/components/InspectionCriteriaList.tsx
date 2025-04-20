@@ -55,7 +55,7 @@ const InspectionCriteriaList: React.FC<InspectionCriteriaListProps> = ({
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="font-mono text-xs">
-                {item.regulationNumber} / {item.iecNumber}
+                {item.regulationNumber || 'N/A'} / {item.iecNumber || 'N/A'}
               </Badge>
               {item.tableReference && (
                 <Badge variant="secondary" className="text-xs">
@@ -135,6 +135,11 @@ const InspectionCriteriaList: React.FC<InspectionCriteriaListProps> = ({
     <div className="space-y-1">
       {criteria
         .sort((a, b) => {
+          // Add safety checks for undefined regulationNumber
+          if (!a.regulationNumber && !b.regulationNumber) return 0;
+          if (!a.regulationNumber) return 1;
+          if (!b.regulationNumber) return -1;
+          
           // First sort by the numeric part of regulationNumber
           const aNum = a.regulationNumber.split(' ')[0];
           const bNum = b.regulationNumber.split(' ')[0];
