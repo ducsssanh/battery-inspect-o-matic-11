@@ -6,7 +6,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import Index from "./pages/Index";
-import TesterDashboard from "./pages/TesterDashboard";
+import TesterDashboard from "./pages/dashboards/tester/TesterDashboard";
+import ManagerDashboard from "./pages/dashboards/manager/ManagerDashboard";
+import CustomerDashboard from "./pages/dashboards/customer/CustomerDashboard";
+import ReceptionDashboard from "./pages/dashboards/reception/ReceptionDashboard";
+import SalesDashboard from "./pages/dashboards/sales/SalesDashboard";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardHeader from "./components/DashboardHeader";
@@ -44,9 +48,7 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={["manager"]}>
                   <DashboardLayout>
-                    <div className="container px-4 py-6 mx-auto max-w-7xl">
-                      <h1 className="text-2xl font-bold">Manager Dashboard</h1>
-                    </div>
+                    <ManagerDashboard />
                   </DashboardLayout>
                 </ProtectedRoute>
               }
@@ -56,9 +58,7 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={["customer"]}>
                   <DashboardLayout>
-                    <div className="container px-4 py-6 mx-auto max-w-7xl">
-                      <h1 className="text-2xl font-bold">Customer Dashboard</h1>
-                    </div>
+                    <CustomerDashboard />
                   </DashboardLayout>
                 </ProtectedRoute>
               }
@@ -68,9 +68,7 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={["reception"]}>
                   <DashboardLayout>
-                    <div className="container px-4 py-6 mx-auto max-w-7xl">
-                      <h1 className="text-2xl font-bold">Reception Dashboard</h1>
-                    </div>
+                    <ReceptionDashboard />
                   </DashboardLayout>
                 </ProtectedRoute>
               }
@@ -80,9 +78,7 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={["sales"]}>
                   <DashboardLayout>
-                    <div className="container px-4 py-6 mx-auto max-w-7xl">
-                      <h1 className="text-2xl font-bold">Sales Dashboard</h1>
-                    </div>
+                    <SalesDashboard />
                   </DashboardLayout>
                 </ProtectedRoute>
               }
