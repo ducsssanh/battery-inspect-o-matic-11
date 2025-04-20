@@ -1,36 +1,47 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Beaker, ClipboardList, FileText, Package } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
+import MainHeader from '@/components/MainHeader';
+
+interface SignupFormData {
+  email: string;
+  password: string;
+}
 
 const Index = () => {
+  const [isLoginMode, setIsLoginMode] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
-  const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoggingIn(true);
+    setIsLoading(true);
     try {
-      await login(email, password);
-      toast.success('Welcome to TestQuest');
+      if (isLoginMode) {
+        await login(email, password);
+        toast.success('Welcome to TestQuest');
+      } else {
+        // For now, we just log them in as a customer
+        await login(`customer@example.com`, 'password');
+        toast.success('Account created successfully!');
+      }
     } catch (error) {
-      toast.error('Login failed. Please check your credentials.');
+      toast.error(isLoginMode ? 'Login failed.' : 'Signup failed.');
       console.error(error);
     } finally {
-      setIsLoggingIn(false);
+      setIsLoading(false);
     }
   };
 
   const handleQuickLogin = async (role: string) => {
-    setIsLoggingIn(true);
+    setIsLoading(true);
     try {
       await login(`${role}@example.com`, 'password');
       toast.success(`Logged in as ${role}`);
@@ -38,23 +49,14 @@ const Index = () => {
       toast.error('Login failed.');
       console.error(error);
     } finally {
-      setIsLoggingIn(false);
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-muted/50">
-      {/* Header */}
-      <header className="w-full py-6 px-4 md:px-8 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-            <span className="font-semibold text-white">TQ</span>
-          </div>
-          <span className="font-bold">TestQuest</span>
-        </div>
-      </header>
-
-      {/* Hero Section */}
+      <MainHeader />
+      
       <section className="flex-1 flex flex-col md:flex-row items-center justify-center p-4 md:p-8 gap-8 md:gap-16">
         {/* Left Content */}
         <div className="w-full max-w-lg space-y-6 animate-fade-up">
@@ -106,15 +108,19 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Right Content - Login Card */}
+        {/* Right Content - Auth Card */}
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
             <div className="mb-6 text-center">
-              <h2 className="text-2xl font-bold">Log In</h2>
-              <p className="text-muted-foreground mt-1">Access your TestQuest dashboard</p>
+              <h2 className="text-2xl font-bold">
+                {isLoginMode ? 'Log In' : 'Sign Up as Customer'}
+              </h2>
+              <p className="text-muted-foreground mt-1">
+                {isLoginMode ? 'Access your TestQuest dashboard' : 'Create your customer account'}
+              </p>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={handleAuth} className="space-y-4">
               <div className="space-y-2">
                 <label htmlFor="email" className="block text-sm font-medium">
                   Email
@@ -143,67 +149,87 @@ const Index = () => {
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoggingIn}>
-                {isLoggingIn ? 'Logging in...' : 'Log In'}
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Processing...' : isLoginMode ? 'Log In' : 'Sign Up'}
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => setIsLoginMode(!isLoginMode)}
+              >
+                {isLoginMode ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <UserPlus size={16} />
+                    Sign up as a customer instead
+                  </span>
+                ) : (
+                  'Log in instead'
+                )}
               </Button>
             </form>
 
-            <div className="mt-6">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-muted" />
-                </div>
-                <div className="relative flex justify-center text-xs">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    Quick Demo Access
-                  </span>
-                </div>
-              </div>
+            {isLoginMode && (
+              <>
+                <div className="mt-6">
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-muted" />
+                    </div>
+                    <div className="relative flex justify-center text-xs">
+                      <span className="bg-background px-2 text-muted-foreground">
+                        Quick Demo Access
+                      </span>
+                    </div>
+                  </div>
 
-              <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleQuickLogin('sales')}
-                  disabled={isLoggingIn}
-                >
-                  Sales
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleQuickLogin('reception')}
-                  disabled={isLoggingIn}
-                >
-                  Reception
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleQuickLogin('tester')}
-                  disabled={isLoggingIn}
-                >
-                  Tester
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleQuickLogin('manager')}
-                  disabled={isLoggingIn}
-                >
-                  Manager
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="col-span-2"
-                  onClick={() => handleQuickLogin('customer')}
-                  disabled={isLoggingIn}
-                >
-                  Customer
-                </Button>
-              </div>
-            </div>
+                  <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleQuickLogin('sales')}
+                      disabled={isLoading}
+                    >
+                      Sales
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleQuickLogin('reception')}
+                      disabled={isLoading}
+                    >
+                      Reception
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleQuickLogin('tester')}
+                      disabled={isLoading}
+                    >
+                      Tester
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleQuickLogin('manager')}
+                      disabled={isLoading}
+                    >
+                      Manager
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="col-span-2"
+                      onClick={() => handleQuickLogin('customer')}
+                      disabled={isLoading}
+                    >
+                      Customer
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
       </section>
