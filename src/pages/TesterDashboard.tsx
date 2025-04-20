@@ -1,215 +1,30 @@
-import React, { useState, useEffect } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { useToast } from "@/components/ui/use-toast";
+
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import InspectionHeader from "@/components/InspectionHeader";
-import InspectionCriteriaList from "@/components/InspectionCriteriaList";
-import InspectionTableView from "@/components/InspectionTableView";
+import InspectionContent from "@/components/inspection/InspectionContent";
 import InspectionSummary from "@/components/InspectionSummary";
 import ReportPreview from "@/components/ReportPreview";
 import ProductSelection from "@/components/ProductSelection";
-import DashboardHeader from "@/components/DashboardHeader";
-import { 
-  fetchProductTemplates,
-  InspectionCriterion, 
-  InspectionTable, 
-  determineTestTableStatus,
-  determineParentStatus
-} from "@/data/inspectionData";
-import { useAuth } from "@/context/AuthContext";
-import { toast as sonnerToast } from "sonner";
+import { useInspection } from "@/hooks/useInspection";
 
-const Index = () => {
-  const { toast } = useToast();
-  const [criteria, setCriteria] = useState<InspectionCriterion[]>([]);
-  const [tables, setTables] = useState<InspectionTable[]>([]);
-  const [reportOpen, setReportOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>("tables"); // Default to tables tab
-  const [selectedProduct, setSelectedProduct] = useState<{ id: string, type: string } | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
-
-  useEffect(() => {
-    if (selectedProduct) {
-      loadProductTemplate(selectedProduct.type);
-    }
-  }, [selectedProduct]);
-
-  useEffect(() => {
-    if (tables.length === 0 || criteria.length === 0) return;
-    
-    const updatedCriteria = [...criteria];
-    
-    tables.forEach(table => {
-      const tableStatus = determineTestTableStatus(table);
-      if (tableStatus) {
-        const criterionIndex = updatedCriteria.findIndex(c => c.id === table.criterionId);
-        if (criterionIndex !== -1) {
-          updatedCriteria[criterionIndex] = {
-            ...updatedCriteria[criterionIndex],
-            status: tableStatus
-          };
-        }
-      }
-    });
-    
-    const level2Criteria = updatedCriteria.filter(c => c.level === 2);
-    level2Criteria.forEach(parentCriterion => {
-      const childrenStatuses = updatedCriteria
-        .filter(c => c.parentId === parentCriterion.id)
-        .map(c => c.status);
-      
-      const parentStatus = determineParentStatus(childrenStatuses);
-      
-      const parentIndex = updatedCriteria.findIndex(c => c.id === parentCriterion.id);
-      if (parentIndex !== -1 && parentStatus !== null) {
-        updatedCriteria[parentIndex] = {
-          ...updatedCriteria[parentIndex],
-          status: parentStatus
-        };
-      }
-    });
-    
-    const level1Criteria = updatedCriteria.filter(c => c.level === 1);
-    level1Criteria.forEach(parentCriterion => {
-      const childrenStatuses = updatedCriteria
-        .filter(c => c.parentId === parentCriterion.id)
-        .map(c => c.status);
-      
-      const parentStatus = determineParentStatus(childrenStatuses);
-      
-      const parentIndex = updatedCriteria.findIndex(c => c.id === parentCriterion.id);
-      if (parentIndex !== -1 && parentStatus !== null) {
-        updatedCriteria[parentIndex] = {
-          ...updatedCriteria[parentIndex],
-          status: parentStatus
-        };
-      }
-    });
-    
-    if (JSON.stringify(criteria) !== JSON.stringify(updatedCriteria)) {
-      setCriteria(updatedCriteria);
-    }
-  }, [tables, criteria]);
-
-  const loadProductTemplate = async (productType: string) => {
-    setIsLoading(true);
-    try {
-      const { criteria: templateCriteria, tables: templateTables } = await fetchProductTemplates(productType);
-      
-      setCriteria(templateCriteria);
-      setTables(templateTables);
-      
-      toast({
-        title: "Template Loaded",
-        description: `Inspection template for ${productType} loaded successfully.`,
-      });
-    } catch (error) {
-      toast({
-        title: "Error Loading Template",
-        description: "Failed to load the inspection template. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSelectProduct = (productId: string, productType: string) => {
-    setSelectedProduct({ id: productId, type: productType });
-    toast({
-      title: "Product Selected",
-      description: `Loading inspection template for ${productType}...`,
-    });
-  };
-
-  const handleBackToProducts = () => {
-    setSelectedProduct(null);
-    setCriteria([]);
-    setTables([]);
-  };
-
-  const handleStatusChange = (id: string, status: "P" | "F" | "N/A") => {
-    setCriteria(prevCriteria => 
-      prevCriteria.map(item => 
-        item.id === id ? { ...item, status } : item
-      )
-    );
-
-    toast({
-      title: "Status updated",
-      description: `Item ${id} marked as ${status === "P" ? "Pass" : status === "F" ? "Fail" : "Not Applicable"}`,
-    });
-  };
-
-  const handleTableResultChange = (tableId: string, sampleId: string, result: string) => {
-    setTables(prevTables => {
-      const updatedTables = prevTables.map(table => 
-        table.id === tableId 
-          ? { 
-              ...table, 
-              results: { 
-                ...table.results, 
-                [sampleId]: result 
-              } 
-            } 
-          : table
-      );
-      
-      const updatedTable = updatedTables.find(t => t.id === tableId);
-      if (updatedTable) {
-        const tableStatus = determineTestTableStatus(updatedTable);
-        
-        if (tableStatus) {
-          setCriteria(prevCriteria => 
-            prevCriteria.map(item => 
-              item.id === updatedTable.criterionId 
-                ? { ...item, status: tableStatus } 
-                : item
-            )
-          );
-        }
-      }
-      
-      return updatedTables;
-    });
-  };
-
-  const handleToggleTableVisibility = (tableId: string) => {
-    setTables(prevTables => 
-      prevTables.map(table => 
-        table.id === tableId 
-          ? { ...table, visible: !table.visible } 
-          : table
-      )
-    );
-  };
-
-  const handleShowTableForCriterion = (criterionId: string) => {
-    const tableToShow = tables.find(table => table.criterionId === criterionId);
-    if (tableToShow) {
-      setTables(prevTables => 
-        prevTables.map(table => 
-          table.id === tableToShow.id
-            ? { ...table, visible: true }
-            : table
-        )
-      );
-      
-      setActiveTab("tables");
-    }
-  };
-
-  const handleGenerateReport = () => {
-    setReportOpen(true);
-    toast({
-      title: "Report Generated",
-      description: "Your inspection report has been generated successfully.",
-    });
-  };
+const TesterDashboard = () => {
+  const {
+    criteria,
+    tables,
+    reportOpen,
+    setReportOpen,
+    activeTab,
+    setActiveTab,
+    selectedProduct,
+    handleSelectProduct,
+    handleBackToProducts,
+    handleStatusChange,
+    handleTableResultChange,
+    handleToggleTableVisibility,
+    handleShowTableForCriterion
+  } = useInspection();
 
   if (!selectedProduct) {
     return (
@@ -239,45 +54,23 @@ const Index = () => {
         <InspectionHeader />
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid grid-cols-2 w-full mb-6">
-                <TabsTrigger value="criteria">Inspection Criteria</TabsTrigger>
-                <TabsTrigger value="tables">Test Tables</TabsTrigger>
-              </TabsList>
-              <TabsContent value="criteria" className="mt-0">
-                <ScrollArea className="h-[calc(100vh-280px)] pr-4">
-                  <InspectionCriteriaList 
-                    criteria={criteria} 
-                    tables={tables}
-                    onStatusChange={handleStatusChange}
-                    onShowTable={handleShowTableForCriterion}
-                  />
-                </ScrollArea>
-              </TabsContent>
-              <TabsContent value="tables" className="mt-0">
-                <ScrollArea className="h-[calc(100vh-280px)] pr-4">
-                  <div className="pb-12">
-                    {tables.map(table => (
-                      <InspectionTableView 
-                        key={table.id} 
-                        table={table} 
-                        onResultChange={handleTableResultChange}
-                        onToggleVisibility={handleToggleTableVisibility}
-                      />
-                    ))}
-                  </div>
-                </ScrollArea>
-              </TabsContent>
-            </Tabs>
-          </div>
+          <InspectionContent 
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            criteria={criteria}
+            tables={tables}
+            onStatusChange={handleStatusChange}
+            onShowTable={handleShowTableForCriterion}
+            onTableResultChange={handleTableResultChange}
+            onToggleTableVisibility={handleToggleTableVisibility}
+          />
           
           <div>
             <div className="sticky top-6">
               <h2 className="text-lg font-semibold mb-4">Inspection Overview</h2>
               <InspectionSummary 
                 criteria={criteria}
-                onGenerateReport={handleGenerateReport}
+                onGenerateReport={() => setReportOpen(true)}
               />
               
               <div className="mt-6 bg-white p-4 rounded-lg border border-gray-200">
@@ -303,4 +96,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default TesterDashboard;
