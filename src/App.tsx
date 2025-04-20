@@ -11,6 +11,7 @@ import Sidebar from "@/components/Sidebar";
 import { useState } from "react";
 import TestAssignments from "@/components/tester/TestAssignments";
 import TestResultsView from "@/components/tester/TestResultsView";
+import { AuthProvider } from "@/context/AuthContext";
 
 const queryClient = new QueryClient();
 
@@ -19,26 +20,28 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <div className="min-h-screen flex w-full">
-            <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-            <div className="flex-1">
-              <Header toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-              <main className="flex-1">
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/assignments" element={<TestAssignments />} />
-                  <Route path="/results" element={<TestResultsView />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </main>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <div className="min-h-screen flex w-full">
+              <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+              <div className="flex-1">
+                <Header toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+                <main className="flex-1">
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/assignments" element={<TestAssignments />} />
+                    <Route path="/results" element={<TestResultsView />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </main>
+              </div>
             </div>
-          </div>
-        </BrowserRouter>
-      </TooltipProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };
