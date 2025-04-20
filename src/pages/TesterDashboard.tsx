@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -19,6 +20,7 @@ import {
   determineParentStatus
 } from "@/data/inspectionData";
 import { useAuth } from "@/context/AuthContext";
+import { toast as sonnerToast } from "sonner";
 
 const Index = () => {
   const { toast } = useToast();
@@ -28,8 +30,6 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<string>("tables"); // Default to tables tab
   const [selectedProduct, setSelectedProduct] = useState<{ id: string, type: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const { login } = useAuth();
 
   // Load templates when a product is selected
@@ -222,33 +222,6 @@ const Index = () => {
     });
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoggingIn(true);
-    try {
-      await login(email, password);
-      toast.success('Welcome to TestQuest');
-    } catch (error) {
-      toast.error('Login failed. Please check your credentials.');
-      console.error(error);
-    } finally {
-      setIsLoggingIn(false);
-    }
-  };
-
-  const handleQuickLogin = async (role: string) => {
-    setIsLoggingIn(true);
-    try {
-      await login(`${role}@example.com`, 'password');
-      toast.success(`Logged in as ${role}`);
-    } catch (error) {
-      toast.error('Login failed.');
-      console.error(error);
-    } finally {
-      setIsLoggingIn(false);
-    }
-  };
-
   // Render product selection if no product is selected
   if (!selectedProduct) {
     return (
@@ -343,3 +316,4 @@ const Index = () => {
 };
 
 export default Index;
+
