@@ -33,7 +33,9 @@ const App = () => (
               path="/tester/dashboard"
               element={
                 <ProtectedRoute allowedRoles={["tester"]}>
-                  <TesterDashboard />
+                  <DashboardLayout>
+                    <TesterDashboard />
+                  </DashboardLayout>
                 </ProtectedRoute>
               }
             />
