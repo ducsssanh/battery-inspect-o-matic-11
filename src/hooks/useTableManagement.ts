@@ -1,50 +1,47 @@
 
 import { useState } from "react";
-import { InspectionTable, determineTestTableStatus } from "@/data/inspectionData";
+import { InspectionTable, InspectionCriterion, determineTestTableStatus } from "@/data/inspectionData";
 
 export const useTableManagement = (
   tables: InspectionTable[],
   setTables: (tables: InspectionTable[]) => void,
-  setCriteria: (criteria: any) => void
+  setCriteria: (criteria: InspectionCriterion[]) => void
 ) => {
   const [activeTab, setActiveTab] = useState<string>("tables");
 
   const handleTableResultChange = (tableId: string, sampleId: string, result: string) => {
-    setTables(prevTables => {
-      const updatedTables = prevTables.map(table => 
-        table.id === tableId 
-          ? { 
-              ...table, 
-              results: { 
-                ...table.results, 
-                [sampleId]: result 
-              } 
+    const updatedTables = tables.map(table => 
+      table.id === tableId 
+        ? { 
+            ...table, 
+            results: { 
+              ...table.results, 
+              [sampleId]: result 
             } 
-          : table
-      );
-      
-      const updatedTable = updatedTables.find(t => t.id === tableId);
-      if (updatedTable) {
-        const tableStatus = determineTestTableStatus(updatedTable);
-        
-        if (tableStatus) {
-          setCriteria(prevCriteria => 
-            prevCriteria.map(item => 
-              item.id === updatedTable.criterionId 
-                ? { ...item, status: tableStatus } 
-                : item
-            )
-          );
-        }
+          } 
+        : table
+    );
+    
+    setTables(updatedTables);
+    
+    const updatedTable = updatedTables.find(t => t.id === tableId);
+    if (updatedTable) {
+      const tableStatus = determineTestTableStatus(updatedTable);
+      if (tableStatus) {
+        setCriteria(prevCriteria => 
+          prevCriteria.map(item => 
+            item.id === updatedTable.criterionId 
+              ? { ...item, status: tableStatus } 
+              : item
+          )
+        );
       }
-      
-      return updatedTables;
-    });
+    }
   };
 
   const handleToggleTableVisibility = (tableId: string) => {
-    setTables(prevTables => 
-      prevTables.map(table => 
+    setTables(
+      tables.map(table => 
         table.id === tableId 
           ? { ...table, visible: !table.visible } 
           : table
@@ -55,8 +52,8 @@ export const useTableManagement = (
   const handleShowTableForCriterion = (criterionId: string) => {
     const tableToShow = tables.find(table => table.criterionId === criterionId);
     if (tableToShow) {
-      setTables(prevTables => 
-        prevTables.map(table => 
+      setTables(
+        tables.map(table => 
           table.id === tableToShow.id
             ? { ...table, visible: true }
             : table

@@ -9,8 +9,8 @@ export const useStatusManagement = (
   const { toast } = useToast();
 
   const handleStatusChange = (id: string, status: "P" | "F" | "N/A") => {
-    setCriteria(prevCriteria => 
-      prevCriteria.map(item => 
+    setCriteria(
+      criteria.map(item => 
         item.id === id ? { ...item, status } : item
       )
     );

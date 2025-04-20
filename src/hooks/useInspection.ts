@@ -1,10 +1,10 @@
 
 import { useEffect } from "react";
-import { determineTestTableStatus, determineParentStatus } from "@/data/inspectionData";
 import { useProductTemplate } from "./useProductTemplate";
 import { useStatusManagement } from "./useStatusManagement";
 import { useTableManagement } from "./useTableManagement";
 import { useReportManagement } from "./useReportManagement";
+import { useStatusCalculation } from "./useStatusCalculation";
 
 export const useInspection = () => {
   const {
@@ -37,62 +37,8 @@ export const useInspection = () => {
     }
   }, [selectedProduct]);
 
-  useEffect(() => {
-    if (tables.length === 0 || criteria.length === 0) return;
-    
-    const updatedCriteria = [...criteria];
-    
-    tables.forEach(table => {
-      const tableStatus = determineTestTableStatus(table);
-      if (tableStatus) {
-        const criterionIndex = updatedCriteria.findIndex(c => c.id === table.criterionId);
-        if (criterionIndex !== -1) {
-          updatedCriteria[criterionIndex] = {
-            ...updatedCriteria[criterionIndex],
-            status: tableStatus
-          };
-        }
-      }
-    });
-    
-    const level2Criteria = updatedCriteria.filter(c => c.level === 2);
-    level2Criteria.forEach(parentCriterion => {
-      const childrenStatuses = updatedCriteria
-        .filter(c => c.parentId === parentCriterion.id)
-        .map(c => c.status);
-      
-      const parentStatus = determineParentStatus(childrenStatuses);
-      
-      const parentIndex = updatedCriteria.findIndex(c => c.id === parentCriterion.id);
-      if (parentIndex !== -1 && parentStatus !== null) {
-        updatedCriteria[parentIndex] = {
-          ...updatedCriteria[parentIndex],
-          status: parentStatus
-        };
-      }
-    });
-    
-    const level1Criteria = updatedCriteria.filter(c => c.level === 1);
-    level1Criteria.forEach(parentCriterion => {
-      const childrenStatuses = updatedCriteria
-        .filter(c => c.parentId === parentCriterion.id)
-        .map(c => c.status);
-      
-      const parentStatus = determineParentStatus(childrenStatuses);
-      
-      const parentIndex = updatedCriteria.findIndex(c => c.id === parentCriterion.id);
-      if (parentIndex !== -1 && parentStatus !== null) {
-        updatedCriteria[parentIndex] = {
-          ...updatedCriteria[parentIndex],
-          status: parentStatus
-        };
-      }
-    });
-    
-    if (JSON.stringify(criteria) !== JSON.stringify(updatedCriteria)) {
-      setCriteria(updatedCriteria);
-    }
-  }, [tables, criteria]);
+  // Use the new status calculation hook
+  useStatusCalculation(tables, criteria, setCriteria);
 
   return {
     criteria,
