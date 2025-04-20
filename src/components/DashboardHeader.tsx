@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import UserProfile from './UserProfile';
 
 const DashboardHeader = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   return (
     <header className="w-full py-6 px-4 md:px-8 flex justify-between items-center bg-background border-b">
@@ -15,7 +15,7 @@ const DashboardHeader = () => {
         <span className="font-bold">TestQuest</span>
       </div>
       <div className="flex items-center gap-4">
-        {user && <UserProfile user={user} onLogout={logout} />}
+        {user && <UserProfile user={user} />}
       </div>
     </header>
   );

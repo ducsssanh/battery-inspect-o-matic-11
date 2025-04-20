@@ -35,49 +35,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
-      // TODO: Replace this with your actual API call
-      // Example API call structure:
-      // const response = await fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password })
-      // });
-      // const data = await response.json();
-      // if (!response.ok) throw new Error(data.message);
-      
-      // For now, using mock data
+      // Mock authentication
+      const role = email.split("@")[0] as UserRole;
       const mockUser = {
         id: "1",
         email,
-        role: email.split("@")[0] as UserRole, // Extracts role from email
-        name: "John Doe"
+        role,
+        name: `${role.charAt(0).toUpperCase() + role.slice(1)} User`
       };
       
-      // TODO: Store the token from your API response
-      // localStorage.setItem('token', data.token);
-      
       setUser(mockUser);
-      
-      // Redirect based on role
-      switch (mockUser.role) {
-        case "tester":
-          navigate("/tester/dashboard");
-          break;
-        case "manager":
-          navigate("/manager/dashboard");
-          break;
-        case "customer":
-          navigate("/customer/dashboard");
-          break;
-        case "sales":
-          navigate("/sales/dashboard");
-          break;
-        case "reception":
-          navigate("/reception/dashboard");
-          break;
-        default:
-          navigate("/dashboard");
-      }
+      navigate(`/${role}/dashboard`);
+      toast.success('Logged in successfully');
     } catch (error) {
       console.error("Login error:", error);
       throw error;
@@ -85,9 +54,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
-    // TODO: Call your logout API endpoint if needed
-    // TODO: Remove token from localStorage
-    // localStorage.removeItem('token');
     setUser(null);
     navigate("/");
     toast.success("Logged out successfully");

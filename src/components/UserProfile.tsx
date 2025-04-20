@@ -6,27 +6,30 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { User, LogOut } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 interface UserProfileProps {
   user: {
     name: string;
     email: string;
+    role: string;
   } | null;
-  onLogout: () => void;
 }
 
-const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout }) => {
-  // This is a placeholder for user authentication state
-  // TODO: Replace with your backend authentication check
-  const isAuthenticated = !!user;
+const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
+  const { login, logout } = useAuth();
 
-  if (!isAuthenticated) {
-    return null;
-  }
+  if (!user) return null;
+
+  const handleRoleSwitch = (newRole: string) => {
+    // Mock login with new role
+    login(`${newRole}@example.com`, 'password123');
+  };
 
   return (
     <DropdownMenu>
@@ -40,16 +43,28 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout }) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
-        <div className="flex items-center justify-start gap-2 p-2">
-          <div className="flex flex-col space-y-1 leading-none">
-            <p className="font-medium">{user.name}</p>
-            <p className="w-[200px] truncate text-sm text-muted-foreground">
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">{user.name}</p>
+            <p className="text-xs leading-none text-muted-foreground">
               {user.email}
             </p>
+            <p className="text-xs leading-none text-muted-foreground capitalize">
+              Role: {user.role}
+            </p>
           </div>
-        </div>
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={onLogout}>
+        
+        <DropdownMenuLabel>Demo: Switch Role</DropdownMenuLabel>
+        <DropdownMenuItem onClick={() => handleRoleSwitch('sales')}>Sales</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleRoleSwitch('reception')}>Reception</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleRoleSwitch('tester')}>Tester</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleRoleSwitch('manager')}>Manager</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleRoleSwitch('customer')}>Customer</DropdownMenuItem>
+        
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={logout} className="text-red-600">
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>
