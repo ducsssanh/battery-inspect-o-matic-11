@@ -2,6 +2,8 @@
 import React, { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import axios from '@/lib/axios';
+
 
 export type UserRole = "tester" | "manager" | "customer" | "sales" | "reception";
 
@@ -35,29 +37,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
-      // Mock authentication
-      const role = email.split("@")[0] as UserRole;
-      const mockUser = {
-        id: "1",
-        email,
-        role,
-        name: `${role.charAt(0).toUpperCase() + role.slice(1)} User`
+      const response = await axios.post(
+        '/auth/login',
+        { email, password },
+        { withCredentials: true } 
+      );
+  
+      const data = response.data;
+  
+      const user = {
+        id: data.user.id,
+        email: data.user.email,
+        role: data.user.role,
+        name: data.user.name,
       };
-      
-      setUser(mockUser);
-      navigate(`/${role}/dashboard`);
+  
+      setUser(user);
+      navigate(`/${user.role.toLowerCase()}/dashboard`);
       toast.success('Logged in successfully');
     } catch (error) {
       console.error("Login error:", error);
+      toast.error("Login failed");
       throw error;
     }
   };
-
-  const logout = () => {
+  
+  const logout = async () => {
+    try {
+      await axios.post('/api/auth/logout', {}, { withCredentials: true });
+    } catch (err) {
+      console.warn('Logout failed on server');
+    }
+  
     setUser(null);
-    navigate("/");
+    navigate('/');
     toast.success("Logged out successfully");
   };
+  
 
   return (
     <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
